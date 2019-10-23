@@ -1,7 +1,5 @@
 import React from 'react';
 import './TicTacToe.css';
-import SweetAlert from 'sweetalert2-react';
-
 class Square extends React.Component {
     render() {
         return (
@@ -15,14 +13,14 @@ class TicTacToe extends React.Component {
         super();
         this.location = [];
         this.index = 0;
-        this.active= '';
-        this.reverse= false;
+        this.active = '';
+        this.reverse = false;
         this.state = {
             squares: Array(400).fill(null),
             turn: true,
             isFinish: false,
             isWinP1: false,
-            reeverse: false,
+            reverse: false,
             activeIndex: -1
         };
         this.returning = false;
@@ -103,25 +101,31 @@ class TicTacToe extends React.Component {
         })
     }
     onchangeTurn(value, i) {
-       console.log(i);
-        
-        this.state.squares = value;
+        console.log(i);
+        this.setState({ squares: value });
         this.index = i;
         this.returning = true;
-        this.state.activeIndex = i;
-   
-       console.log(this.state.activeIndex);
+        this.setState({ activeIndex: i });
+
+        console.log(this.state.activeIndex);
         this.setState({
             squares: value,
-            turn: i%2 == 0? true: false,
+            turn: i % 2 === 0 ? true : false,
 
         })
     }
-    onReverse()
-    {
+    mapReverse(array, fn) {
+        return array.reduceRight(function (result, el) {
+            result.push(fn(el));
+            return result;
+        }, []);
+    }
+    onReverse() {
         this.reverse = !this.reverse;
-        this.setState({reverse: !this.state.reverse});
-        
+        this.setState({ reverse: !this.state.reverse });
+
+        this.location = this.mapReverse(this.location, function (i) { return i; })
+
 
     }
     createTable = () => {
@@ -140,15 +144,14 @@ class TicTacToe extends React.Component {
                             this.location.splice(this.index, this.location.length - this.index);
                             this.returning = false;
                         }
-                        if (this.state.squares[20 * i + j] === null)
-                        {
-                        this.location.push({
-                            x: i,
-                            y: j,
-                            player: this.state.turn ? 'Player 1' : 'Player 2',
-                            squares: this.state.squares
-                        })
-                    }
+                        if (this.state.squares[20 * i + j] === null) {
+                            this.location.push({
+                                x: i,
+                                y: j,
+                                player: this.state.turn ? 'Player 1' : 'Player 2',
+                                squares: this.state.squares
+                            })
+                        }
 
 
                     }} value={this.state.squares[20 * i + j]} />)
@@ -160,17 +163,16 @@ class TicTacToe extends React.Component {
                             this.location.splice(this.index, this.location.length - this.index);
                             this.returning = false;
                         }
-                        if (this.state.squares[20 * i + j] === null)
-                        {
+                        if (this.state.squares[20 * i + j] === null) {
                             this.location.push({
                                 x: i,
                                 y: j,
                                 player: this.state.turn ? 'Player 1' : 'Player 2',
                                 squares: this.state.squares
-    
+
                             })
                         }
-                 
+
 
                     }} value={'\u00A0'} />)
                 }
@@ -183,11 +185,6 @@ class TicTacToe extends React.Component {
     }
 
     render() {
-        let status;
-
-
-
-
 
         return (
             <div className="container">
@@ -201,13 +198,13 @@ class TicTacToe extends React.Component {
 
                     </div>
                     <div className="col-6">
-                        <button class="btn btn-success" onClick={()=>this.onReverse()}>Reverse {this.state.reverse?'DESC': 'ASC'}</button>
+                        <button class="btn btn-success" onClick={() => this.onReverse()}>Reverse {this.state.reverse ? 'DESC' : 'ASC'}</button>
                         <div>
                             {
-                                
-                               this.state.reverse ? this.location.reverse().map((el, i) => <div><div className={`btn btn-primary ${this.state.activeIndex == i?'active':'' }`} onClick={() => this.onchangeTurn(el.squares, i)}>Turn: {this.location.length -i} - {el.player} X : {el.x} and Y : {el.y}</div>
-                                <div className={`btn btn-danger ${this.state.activeIndex == i?'active':'' }`}>({el.x}, {el.y})</div></div>):this.location.map((el, i) => <div><div className={`btn btn-primary ${this.state.activeIndex == i?'active':'' }`} onClick={() => this.onchangeTurn(el.squares, i)}>Turn: {i + 1} - {el.player} X : {el.x} and Y : {el.y}</div>
-                                <div className={`btn btn-danger ${this.state.activeIndex == i?'active':'' }`}>({el.x}, {el.y})</div></div>)
+
+                                this.state.reverse ? this.location.reverse().map((el, i) => <div><div className={`btn btn-primary ${this.state.activeIndex === i ? 'active' : ''}`} onClick={() => this.onchangeTurn(el.squares, i)}>Turn: {this.location.length - i} - {el.player} X : {el.x} and Y : {el.y}</div>
+                                    <div className={`btn btn-danger ${this.state.activeIndex === i ? 'active' : ''}`}>({el.x}, {el.y})</div></div>) : this.location.map((el, i) => <div><div className={`btn btn-primary ${this.state.activeIndex === i ? 'active' : ''}`} onClick={() => this.onchangeTurn(el.squares, i)}>Turn: {i + 1} - {el.player} X : {el.x} and Y : {el.y}</div>
+                                        <div className={`btn btn-danger ${this.state.activeIndex === i ? 'active' : ''}`}>({el.x}, {el.y})</div></div>)
                             }
                         </div>
                         <button className="btn-lg btn-primary my-2 font-weight-bold" onClick={() => this.onPlayAgainClick()}>Play Again</button>
